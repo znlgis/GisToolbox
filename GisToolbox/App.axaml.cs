@@ -48,11 +48,8 @@ public class App : Application
         // 注册服务
         services.AddSingleton<IVectorProcessingService, VectorProcessingService>();
         services.AddSingleton<ICoordinateTransformService, CoordinateTransformService>();
-        
-        if (OperatingSystem.IsWindows())
-        {
-            services.AddSingleton<IRasterProcessingService, RasterProcessingService>();
-        }
+
+        if (OperatingSystem.IsWindows()) services.AddSingleton<IRasterProcessingService, RasterProcessingService>();
 
         // 注册 ViewModels
         services.AddTransient<MainWindowViewModel>();
@@ -62,7 +59,7 @@ public class App : Application
         services.AddTransient<OverlayAnalysisViewModel>();
         services.AddTransient<CoordinateTransformViewModel>();
         services.AddTransient<CsvToGeometryViewModel>();
-        
+
         if (OperatingSystem.IsWindows())
         {
             services.AddTransient<RasterFormatConversionViewModel>();

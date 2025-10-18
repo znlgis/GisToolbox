@@ -137,24 +137,24 @@ public class VectorProcessingService : IVectorProcessingService
         return transformed;
     }
 
-    public Geometry? Intersection(Geometry geom1, Geometry geom2) => TryOperation(geom1.Intersection, geom2);
-
-    public Geometry? Union(Geometry geom1, Geometry geom2) => TryOperation(geom1.Union, geom2);
-
-    public Geometry? Difference(Geometry geom1, Geometry geom2) => TryOperation(geom1.Difference, geom2);
-
-    public Geometry? SymmetricDifference(Geometry geom1, Geometry geom2) => TryOperation(geom1.SymmetricDifference, geom2);
-
-    private static Geometry? TryOperation(Func<Geometry, Geometry> operation, Geometry geom2)
+    public Geometry? Intersection(Geometry geom1, Geometry geom2)
     {
-        try
-        {
-            return operation(geom2);
-        }
-        catch
-        {
-            return null;
-        }
+        return TryOperation(geom1.Intersection, geom2);
+    }
+
+    public Geometry? Union(Geometry geom1, Geometry geom2)
+    {
+        return TryOperation(geom1.Union, geom2);
+    }
+
+    public Geometry? Difference(Geometry geom1, Geometry geom2)
+    {
+        return TryOperation(geom1.Difference, geom2);
+    }
+
+    public Geometry? SymmetricDifference(Geometry geom1, Geometry geom2)
+    {
+        return TryOperation(geom1.SymmetricDifference, geom2);
     }
 
     public async Task<ProcessingResult> ConvertFormatAsync(string inputPath, VectorFormat inputFormat,
@@ -195,6 +195,18 @@ public class VectorProcessingService : IVectorProcessingService
         }
     }
 
+    private static Geometry? TryOperation(Func<Geometry, Geometry> operation, Geometry geom2)
+    {
+        try
+        {
+            return operation(geom2);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     #region Private Methods
 
     private List<GeometryDataModel> LoadShapefile(string filePath)
@@ -219,13 +231,11 @@ public class VectorProcessingService : IVectorProcessingService
 
             // 读取属性
             if (feature.Attributes != null)
-            {
                 foreach (var attrName in feature.Attributes.GetNames())
                 {
                     var value = feature.Attributes[attrName];
                     model.Properties[attrName] = value ?? DBNull.Value;
                 }
-            }
 
             model.Metadata.GeometryType = geometry.GeometryType;
             model.Metadata.SourceFile = filePath;

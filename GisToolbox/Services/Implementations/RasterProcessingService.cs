@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Runtime.Versioning;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.Versioning;
 using GisToolbox.Models;
 using GisToolbox.Services.Interfaces;
 

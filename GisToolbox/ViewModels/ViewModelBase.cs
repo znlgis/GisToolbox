@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace GisToolbox.ViewModels;
+﻿namespace GisToolbox.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {

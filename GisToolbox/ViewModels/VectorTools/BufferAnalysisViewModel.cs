@@ -47,7 +47,7 @@ public partial class BufferAnalysisViewModel : ToolViewModelBase
             {
                 if (geometries[i].Geometry != null)
                     geometries[i].Geometry = _vectorService.BufferGeometry(geometries[i].Geometry, BufferDistance);
-                
+
                 progress.Report(30 + (int)(60.0 * (i + 1) / geometries.Count));
             }
 

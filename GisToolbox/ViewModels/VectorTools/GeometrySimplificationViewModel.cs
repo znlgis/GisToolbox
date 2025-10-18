@@ -49,7 +49,7 @@ public partial class GeometrySimplificationViewModel : ToolViewModelBase
             {
                 if (geometries[i].Geometry != null)
                     geometries[i].Geometry = _vectorService.SimplifyGeometry(geometries[i].Geometry, Tolerance);
-                
+
                 progress.Report(30 + (int)(60.0 * (i + 1) / geometries.Count));
             }
 

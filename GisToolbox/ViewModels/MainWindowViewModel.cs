@@ -20,36 +20,36 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ToolCategories =
         [
-            new()
+            new ToolCategoryItem
             {
                 Name = "矢量工具",
                 Icon = "📐",
                 Tools =
                 [
-                    new() { Name = "格式转换", ToolType = typeof(FormatConversionViewModel) },
-                    new() { Name = "几何简化", ToolType = typeof(GeometrySimplificationViewModel) },
-                    new() { Name = "缓冲区分析", ToolType = typeof(BufferAnalysisViewModel) },
-                    new() { Name = "叠加分析", ToolType = typeof(OverlayAnalysisViewModel) }
+                    new ToolMenuItem { Name = "格式转换", ToolType = typeof(FormatConversionViewModel) },
+                    new ToolMenuItem { Name = "几何简化", ToolType = typeof(GeometrySimplificationViewModel) },
+                    new ToolMenuItem { Name = "缓冲区分析", ToolType = typeof(BufferAnalysisViewModel) },
+                    new ToolMenuItem { Name = "叠加分析", ToolType = typeof(OverlayAnalysisViewModel) }
                 ]
             },
-            new()
+            new ToolCategoryItem
             {
                 Name = "栅格工具",
                 Icon = "🗺️",
                 Tools =
                 [
-                    new() { Name = "格式转换", ToolType = typeof(RasterFormatConversionViewModel) },
-                    new() { Name = "重采样", ToolType = typeof(RasterResampleViewModel) }
+                    new ToolMenuItem { Name = "格式转换", ToolType = typeof(RasterFormatConversionViewModel) },
+                    new ToolMenuItem { Name = "重采样", ToolType = typeof(RasterResampleViewModel) }
                 ]
             },
-            new()
+            new ToolCategoryItem
             {
                 Name = "坐标工具",
                 Icon = "🌐",
                 Tools =
                 [
-                    new() { Name = "坐标转换", ToolType = typeof(CoordinateTransformViewModel) },
-                    new() { Name = "CSV转几何", ToolType = typeof(CsvToGeometryViewModel) }
+                    new ToolMenuItem { Name = "坐标转换", ToolType = typeof(CoordinateTransformViewModel) },
+                    new ToolMenuItem { Name = "CSV转几何", ToolType = typeof(CsvToGeometryViewModel) }
                 ]
             }
         ];
