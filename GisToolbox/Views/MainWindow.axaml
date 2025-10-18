@@ -1,0 +1,240 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GisToolbox.ViewModels"
+        xmlns:vvm="using:GisToolbox.ViewModels.VectorTools"
+        xmlns:cvm="using:GisToolbox.ViewModels.CoordinateTools"
+        xmlns:rvm="using:GisToolbox.ViewModels.RasterTools"
+        xmlns:views="using:GisToolbox.Views.VectorTools"
+        xmlns:cviews="using:GisToolbox.Views.CoordinateTools"
+        xmlns:rviews="using:GisToolbox.Views.RasterTools"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+        x:Class="GisToolbox.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="{Binding Title}"
+        Width="1200" Height="700"
+        MinWidth="800" MinHeight="600">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 顶部标题栏 -->
+        <Border Grid.Row="0" Background="White" BorderBrush="#E1E1E1" BorderThickness="0,0,0,1" Padding="20,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                    <Border Background="#0078D4"
+                            CornerRadius="4"
+                            Padding="8,6"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="🗺️"
+                                   FontSize="18"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="GisToolbox"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="#323130" />
+                        <TextBlock Text="专业的 GIS 工具集"
+                                   FontSize="12"
+                                   Foreground="#8A8886" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧导航面板 -->
+            <Border Grid.Column="0"
+                    Background="White"
+                    BorderBrush="#E1E1E1"
+                    BorderThickness="0,0,1,0"
+                    Padding="16,20">
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding ToolCategories}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,24">
+                                    <!-- 分类标题 -->
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Foreground="#8A8886"
+                                               Margin="8,0,0,8" />
+
+                                    <!-- 工具列表 -->
+                                    <ItemsControl ItemsSource="{Binding Tools}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Classes="tool-item"
+                                                        Content="{Binding Name}"
+                                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectToolCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <Button.Template>
+                                                        <ControlTemplate>
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                    CornerRadius="4"
+                                                                    Padding="12,10"
+                                                                    Margin="0,1">
+                                                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                                        HorizontalAlignment="Left"
+                                                                        VerticalAlignment="Center" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+
+            <!-- 右侧内容区域 -->
+            <Border Grid.Column="1" Background="#F5F5F5" Padding="32">
+                <ScrollViewer>
+                    <Grid>
+                        <!-- 欢迎界面 -->
+                        <StackPanel IsVisible="{Binding SelectedTool, Converter={x:Static ObjectConverters.IsNull}}">
+                            <TextBlock Text="欢迎使用 GisToolbox"
+                                       Classes="title"
+                                       Margin="0,0,0,8" />
+                            <TextBlock Text="请从左侧选择一个工具开始使用"
+                                       Classes="body"
+                                       Margin="0,0,0,32" />
+
+                            <!-- 功能卡片 -->
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  RowSpacing="16">
+                                <!-- 矢量工具卡片 -->
+                                <Border Grid.Row="0" Grid.Column="0" Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <Border Background="#E3F2FD"
+                                                CornerRadius="8"
+                                                Padding="12"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="📐" FontSize="24" />
+                                        </Border>
+                                        <TextBlock Text="矢量工具"
+                                                   Classes="subtitle" />
+                                        <TextBlock Classes="body" TextWrapping="Wrap">
+                                            格式转换、几何简化、缓冲区分析、叠加分析等专业矢量处理工具
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 栅格工具卡片 -->
+                                <Border Grid.Row="0" Grid.Column="1" Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <Border Background="#FFF3E0"
+                                                CornerRadius="8"
+                                                Padding="12"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="🗺️" FontSize="24" />
+                                        </Border>
+                                        <TextBlock Text="栅格工具"
+                                                   Classes="subtitle" />
+                                        <TextBlock Classes="body" TextWrapping="Wrap">
+                                            栅格格式转换、重采样、裁剪与镶嵌等功能（开发中）
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 坐标工具卡片 -->
+                                <Border Grid.Row="0" Grid.Column="2" Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <Border Background="#E8F5E9"
+                                                CornerRadius="8"
+                                                Padding="12"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="🌐" FontSize="24" />
+                                        </Border>
+                                        <TextBlock Text="坐标工具"
+                                                   Classes="subtitle" />
+                                        <TextBlock Classes="body" TextWrapping="Wrap">
+                                            坐标系统转换、CSV转几何等坐标处理功能
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- 快速开始提示 -->
+                            <Border Classes="card" Margin="0,24,0,0" Background="#F0F7FF" BorderBrush="#0078D4"
+                                    BorderThickness="1">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="💡 快速开始"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="#0078D4" />
+                                    <TextBlock Classes="body" TextWrapping="Wrap">
+                                        1. 从左侧菜单选择一个工具
+                                        <LineBreak />
+                                        2. 点击"浏览"按钮选择输入文件
+                                        <LineBreak />
+                                        3. 配置参数并点击执行按钮
+                                        <LineBreak />
+                                        4. 查看处理结果
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- 工具内容区域 -->
+                        <ContentControl Content="{Binding SelectedTool}"
+                                        IsVisible="{Binding SelectedTool, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <ContentControl.DataTemplates>
+                                <DataTemplate DataType="{x:Type vvm:GeometrySimplificationViewModel}">
+                                    <views:GeometrySimplificationView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vvm:FormatConversionViewModel}">
+                                    <views:FormatConversionView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vvm:BufferAnalysisViewModel}">
+                                    <views:BufferAnalysisView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vvm:OverlayAnalysisViewModel}">
+                                    <views:OverlayAnalysisView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type cvm:CoordinateTransformViewModel}">
+                                    <cviews:CoordinateTransformView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type cvm:CsvToGeometryViewModel}">
+                                    <cviews:CsvToGeometryView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type rvm:RasterFormatConversionViewModel}">
+                                    <rviews:RasterFormatConversionView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type rvm:RasterResampleViewModel}">
+                                    <rviews:RasterResampleView />
+                                </DataTemplate>
+                            </ContentControl.DataTemplates>
+                        </ContentControl>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

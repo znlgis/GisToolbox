@@ -1,0 +1,201 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.CoordinateTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="GisToolbox.Views.CoordinateTools.CoordinateTransformView"
+             x:DataType="vm:CoordinateTransformViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 参数配置卡片 -->
+        <Border Classes="card">
+            <StackPanel Spacing="20">
+                <TextBlock Text="参数配置"
+                           Classes="subtitle" />
+
+                <!-- 输入文件 -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输入文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding InputFilePath}"
+                                 Watermark="选择输入矢量文件..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectInputFileCommand}"
+                                Margin="8,0,0,0"
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- 输出文件 -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输出文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding OutputFilePath}"
+                                 Watermark="选择输出文件路径..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectOutputFileCommand}"
+                                Margin="8,0,0,0"
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- 坐标系统选择 -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="源坐标系统"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <ComboBox ItemsSource="{Binding AvailableCoordinateSystems}"
+                                  SelectedItem="{Binding SelectedSourceSystem}"
+                                  HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding SourceSRID, StringFormat='SRID: {0}'}"
+                                   Classes="caption" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Text="目标坐标系统"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <ComboBox ItemsSource="{Binding AvailableCoordinateSystems}"
+                                  SelectedItem="{Binding SelectedTargetSystem}"
+                                  HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding TargetSRID, StringFormat='SRID: {0}'}"
+                                   Classes="caption" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- 格式选择 -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="输入格式"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <ComboBox SelectedItem="{Binding InputFormat}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="Shapefile" />
+                            <ComboBoxItem Content="GeoJSON" />
+                            <ComboBoxItem Content="WKT" />
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Text="输出格式"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <ComboBox SelectedItem="{Binding OutputFormat}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="Shapefile" />
+                            <ComboBoxItem Content="GeoJSON" />
+                            <ComboBoxItem Content="WKT" />
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 说明 -->
+                <Border Background="#F3F2F1"
+                        Padding="16"
+                        CornerRadius="4">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="坐标系统转换"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Classes="caption" TextWrapping="Wrap">
+                            将几何数据从一个坐标参考系统转换到另一个。常用转换包括：地理坐标与投影坐标互转、不同投影系统间转换等。
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- 操作按钮 -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="执行转换"
+                    Command="{Binding ProcessCommand}"
+                    Classes="primary"
+                    IsEnabled="{Binding !IsBusy}" />
+
+            <Button Content="重置"
+                    Command="{Binding ResetCommand}"
+                    Classes="secondary" />
+        </StackPanel>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在转换坐标系统..."
+                           Classes="subtitle" />
+                <ProgressBar Value="{Binding ProgressValue}"
+                             Maximum="100" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 结果显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="转换结果"
+                           Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="caption">状态</TextBlock>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <StackPanel
+                    IsVisible="{Binding TransformedFeatureCount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Spacing="8">
+                    <TextBlock Text="转换的要素数"
+                               Classes="caption" />
+                    <TextBlock Text="{Binding TransformedFeatureCount}"
+                               FontSize="32"
+                               FontWeight="Bold"
+                               Foreground="#0078D4" />
+                </StackPanel>
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

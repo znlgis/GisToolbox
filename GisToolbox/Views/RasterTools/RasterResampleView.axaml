@@ -1,0 +1,184 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.RasterTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="GisToolbox.Views.RasterTools.RasterResampleView"
+             x:DataType="vm:RasterResampleViewModel">
+
+    <StackPanel Spacing="24">
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Classes="card">
+            <StackPanel Spacing="20">
+                <TextBlock Text="参数配置"
+                           Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输入文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding InputFilePath}"
+                                 Watermark="选择输入栅格文件..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectInputFileCommand}"
+                                Margin="8,0,0,0"
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输出文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding OutputFilePath}"
+                                 Watermark="选择输出文件路径..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectOutputFileCommand}"
+                                Margin="8,0,0,0"
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="原始尺寸"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Classes="caption">
+                            <Run Text="宽度: " />
+                            <Run Text="{Binding OriginalWidth}" FontWeight="Bold" />
+                            <Run Text=" × 高度: " />
+                            <Run Text="{Binding OriginalHeight}" FontWeight="Bold" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Text="重采样方法"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <ComboBox ItemsSource="{Binding AvailableMethods}"
+                                  SelectedItem="{Binding SelectedMethod}"
+                                  HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="16">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="新宽度"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <NumericUpDown Value="{Binding NewWidth}"
+                                       Minimum="1"
+                                       Maximum="10000"
+                                       FormatString="0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Text="新高度"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <NumericUpDown Value="{Binding NewHeight}"
+                                       Minimum="1"
+                                       Maximum="10000"
+                                       FormatString="0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Bottom">
+                        <CheckBox IsChecked="{Binding MaintainAspectRatio}"
+                                  Content="保持纵横比"
+                                  VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <Border Background="#F3F2F1"
+                        Padding="16"
+                        CornerRadius="4">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="重采样方法说明"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Classes="caption" TextWrapping="Wrap">
+                            • 最近邻 (NearestNeighbor) - 速度快，但可能产生锯齿
+                            <LineBreak />
+                            • 双线性 (Bilinear) - 平衡速度和质量，适合大多数情况
+                            <LineBreak />
+                            • 三次卷积 (Cubic) - 质量最高，但速度较慢
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="执行重采样"
+                    Command="{Binding ProcessCommand}"
+                    Classes="primary"
+                    IsEnabled="{Binding !IsBusy}" />
+
+            <Button Content="重置"
+                    Command="{Binding ResetCommand}"
+                    Classes="secondary" />
+        </StackPanel>
+
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在重采样..."
+                           Classes="subtitle" />
+                <ProgressBar Value="{Binding ProgressValue}"
+                             Maximum="100" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="重采样结果"
+                           Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="caption">状态</TextBlock>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

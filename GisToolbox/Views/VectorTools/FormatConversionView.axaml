@@ -1,0 +1,160 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.VectorTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="GisToolbox.Views.VectorTools.FormatConversionView"
+             x:DataType="vm:FormatConversionViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 参数配置卡片 -->
+        <Border Classes="card">
+            <StackPanel Spacing="20">
+                <TextBlock Text="参数配置"
+                           Classes="subtitle" />
+
+                <!-- 输入文件 -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输入文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto,140">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding InputFilePath}"
+                                 Watermark="选择输入文件..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectInputFileCommand}"
+                                Margin="8,0"
+                                Padding="16,8" />
+                        <ComboBox Grid.Column="2"
+                                  ItemsSource="{Binding AvailableFormats}"
+                                  SelectedItem="{Binding InputFormat}"
+                                  Margin="8,0,0,0" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- 输出文件 -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="输出文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto,140">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding OutputFilePath}"
+                                 Watermark="选择输出文件路径..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Classes="secondary"
+                                Command="{Binding SelectOutputFileCommand}"
+                                Margin="8,0"
+                                Padding="16,8" />
+                        <ComboBox Grid.Column="2"
+                                  ItemsSource="{Binding AvailableFormats}"
+                                  SelectedItem="{Binding OutputFormat}"
+                                  Margin="8,0,0,0" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- 格式说明 -->
+                <Border Background="#F3F2F1"
+                        Padding="16"
+                        CornerRadius="4">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="支持的格式"
+                                   Classes="body"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Classes="caption" TextWrapping="Wrap">
+                            • Shapefile (.shp) - ESRI 标准矢量格式
+                            <LineBreak />
+                            • GeoJSON (.geojson, .json) - JSON 地理数据格式
+                            <LineBreak />
+                            • WKT (.wkt) - Well-Known Text 格式
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- 操作按钮 -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="开始转换"
+                    Command="{Binding ProcessCommand}"
+                    Classes="primary"
+                    IsEnabled="{Binding !IsBusy}" />
+
+            <Button Content="重置"
+                    Command="{Binding ResetCommand}"
+                    Classes="secondary" />
+        </StackPanel>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在转换格式..."
+                           Classes="subtitle" />
+                <ProgressBar Value="{Binding ProgressValue}"
+                             Maximum="100" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 结果显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="转换结果"
+                           Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="caption">状态</TextBlock>
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <StackPanel IsVisible="{Binding FeatureCount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Spacing="8">
+                    <TextBlock Text="转换的要素数"
+                               Classes="caption" />
+                    <TextBlock Text="{Binding FeatureCount}"
+                               FontSize="32"
+                               FontWeight="Bold"
+                               Foreground="#0078D4" />
+                </StackPanel>
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
