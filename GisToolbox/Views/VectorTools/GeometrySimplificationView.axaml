@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,7 +8,7 @@
              x:DataType="vm:GeometrySimplificationViewModel">
 
     <StackPanel Spacing="24">
-        <!-- ���߱��� -->
+        <!-- 工具标题 -->
         <StackPanel Spacing="8">
             <TextBlock Text="{Binding ToolName}"
                        Classes="title" />
@@ -17,24 +17,24 @@
                        TextWrapping="Wrap" />
         </StackPanel>
 
-        <!-- �������ÿ�Ƭ -->
+        <!-- 参数配置卡片 -->
         <Border Classes="card">
             <StackPanel Spacing="20">
-                <TextBlock Text="��������"
+                <TextBlock Text="参数配置"
                            Classes="subtitle" />
 
-                <!-- �����ļ� -->
+                <!-- 输入文件 -->
                 <StackPanel Spacing="8">
-                    <TextBlock Text="�����ļ�"
+                    <TextBlock Text="输入文件"
                                Classes="body"
                                FontWeight="SemiBold" />
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBox Grid.Column="0"
                                  Text="{Binding InputFilePath}"
-                                 Watermark="ѡ������ʸ���ļ�..."
+                                 Watermark="选择输入矢量文件..."
                                  IsReadOnly="True" />
                         <Button Grid.Column="1"
-                                Content="���"
+                                Content="浏览"
                                 Classes="secondary"
                                 Command="{Binding SelectInputFileCommand}"
                                 Margin="8,0,0,0"
@@ -42,18 +42,18 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- ����ļ� -->
+                <!-- 输出文件 -->
                 <StackPanel Spacing="8">
-                    <TextBlock Text="����ļ�"
+                    <TextBlock Text="输出文件"
                                Classes="body"
                                FontWeight="SemiBold" />
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBox Grid.Column="0"
                                  Text="{Binding OutputFilePath}"
-                                 Watermark="ѡ������ļ�·��..."
+                                 Watermark="选择输出文件路径..."
                                  IsReadOnly="True" />
                         <Button Grid.Column="1"
-                                Content="���"
+                                Content="浏览"
                                 Classes="secondary"
                                 Command="{Binding SelectOutputFileCommand}"
                                 Margin="8,0,0,0"
@@ -61,11 +61,11 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- ���ݲ� -->
+                <!-- 简化容差 -->
                 <StackPanel Spacing="8">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock Grid.Column="0"
-                                   Text="���ݲ�"
+                                   Text="简化容差"
                                    Classes="body"
                                    FontWeight="SemiBold" />
                         <TextBlock Grid.Column="1"
@@ -79,43 +79,43 @@
                             Value="{Binding Tolerance}"
                             TickFrequency="0.01" />
                     <TextBlock Classes="caption">
-                        �ݲ�ֵԽ�󣬼򻯳̶�Խ�ߡ��Ƽ���Χ��0.0001 - 0.01
+                        容差值越大，简化程度越高。推荐范围：0.0001 - 0.01
                     </TextBlock>
                 </StackPanel>
 
-                <!-- �㷨˵�� -->
+                <!-- 算法说明 -->
                 <Border Background="#F3F2F1"
                         Padding="16"
                         CornerRadius="4">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Douglas-Peucker �㷨"
+                        <TextBlock Text="Douglas-Peucker 算法"
                                    Classes="body"
                                    FontWeight="SemiBold" />
                         <TextBlock Classes="caption" TextWrapping="Wrap">
-                            ���㷨ͨ���ݹ鷽ʽ���߶Σ�����������״�Ļ���������ͬʱ���ٶ��������������ڼ򻯸��ӵ��ߺͶ���μ��Ρ�
+                            该算法通过递归方式简化线段，保留几何形状的基本特征，同时减少顶点数量。适用于简化复杂的线和多边形几何。
                         </TextBlock>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </Border>
 
-        <!-- ������ť -->
+        <!-- 操作按钮 -->
         <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Content="ִ�м�"
+            <Button Content="执行简化"
                     Command="{Binding ProcessCommand}"
                     Classes="primary"
                     IsEnabled="{Binding !IsBusy}" />
 
-            <Button Content="����"
+            <Button Content="重置"
                     Command="{Binding ResetCommand}"
                     Classes="secondary" />
         </StackPanel>
 
-        <!-- ������ʾ -->
+        <!-- 进度显示 -->
         <Border Classes="card"
                 IsVisible="{Binding IsBusy}">
             <StackPanel Spacing="16">
-                <TextBlock Text="���ڼ򻯼���..."
+                <TextBlock Text="正在简化几何..."
                            Classes="subtitle" />
                 <ProgressBar Value="{Binding ProgressValue}"
                              Maximum="100" />
@@ -124,15 +124,15 @@
             </StackPanel>
         </Border>
 
-        <!-- �����ʾ -->
+        <!-- 结果显示 -->
         <Border Classes="card"
                 IsVisible="{Binding !IsBusy}">
             <StackPanel Spacing="16">
-                <TextBlock Text="�򻯽��"
+                <TextBlock Text="简化结果"
                            Classes="subtitle" />
 
                 <StackPanel Spacing="8">
-                    <TextBlock Classes="caption">״̬</TextBlock>
+                    <TextBlock Classes="caption">状态</TextBlock>
                     <TextBlock Text="{Binding StatusMessage}"
                                Classes="body"
                                FontWeight="SemiBold" />
@@ -142,7 +142,7 @@
                       IsVisible="{Binding OriginalFeatureCount, Converter={x:Static ObjectConverters.IsNotNull}}"
                       ColumnSpacing="16">
                     <StackPanel Grid.Column="0" Spacing="8">
-                        <TextBlock Text="ԭʼҪ����" Classes="caption" />
+                        <TextBlock Text="原始要素数" Classes="caption" />
                         <TextBlock Text="{Binding OriginalFeatureCount}"
                                    FontSize="32"
                                    FontWeight="Bold"
@@ -150,7 +150,7 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="8">
-                        <TextBlock Text="�򻯺�Ҫ����" Classes="caption" />
+                        <TextBlock Text="简化后要素数" Classes="caption" />
                         <TextBlock Text="{Binding SimplifiedFeatureCount}"
                                    FontSize="32"
                                    FontWeight="Bold"
@@ -158,7 +158,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- ������ʾ -->
+                <!-- 错误显示 -->
                 <Border Background="#FFF4F4"
                         BorderBrush="#E81123"
                         BorderThickness="1"
@@ -166,7 +166,7 @@
                         CornerRadius="4"
                         IsVisible="{Binding HasError}">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="����"
+                        <TextBlock Text="错误"
                                    FontWeight="SemiBold"
                                    Foreground="#E81123" />
                         <TextBlock Text="{Binding ErrorMessage}"
