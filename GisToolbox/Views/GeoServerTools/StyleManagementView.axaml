@@ -1,0 +1,203 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.GeoServerTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             x:Class="GisToolbox.Views.GeoServerTools.StyleManagementView"
+             x:DataType="vm:StyleManagementViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 连接状态提示 -->
+        <Border Background="#FFF4F4"
+                BorderBrush="#E81123"
+                BorderThickness="1"
+                Padding="16"
+                CornerRadius="4"
+                IsVisible="{Binding !IsConnected}">
+            <TextBlock Text="请先使用 'GeoServer 连接' 工具连接到 GeoServer 服务器"
+                       Foreground="#E81123"
+                       FontWeight="SemiBold" />
+        </Border>
+
+        <!-- 筛选与样式列表 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="样式列表" Classes="subtitle" />
+
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <CheckBox Content="显示全局样式"
+                              IsChecked="{Binding ShowAllStyles}" />
+                    <Button Content="刷新"
+                            Command="{Binding RefreshStylesCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </StackPanel>
+
+                <StackPanel IsVisible="{Binding !ShowAllStyles}" Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="选择工作空间" Classes="body" VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Content="刷新"
+                                Command="{Binding RefreshWorkspacesCommand}"
+                                Classes="secondary"
+                                IsEnabled="{Binding !IsBusy}" />
+                    </Grid>
+                    <ComboBox ItemsSource="{Binding Workspaces}"
+                              SelectedItem="{Binding SelectedWorkspace}"
+                              HorizontalAlignment="Stretch"
+                              PlaceholderText="选择工作空间...">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Styles}"
+                         SelectedItem="{Binding SelectedStyle}"
+                         MinHeight="100"
+                         MaxHeight="200">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*" Margin="8,4">
+                                <TextBlock Grid.Column="0" Text="🎨" FontSize="16" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Format}" Classes="caption" Foreground="#8A8886" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+
+        <!-- 样式内容编辑 -->
+        <Border Classes="card" IsVisible="{Binding SelectedStyle, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="20">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Classes="subtitle">
+                        <Run Text="样式内容: " />
+                        <Run Text="{Binding SelectedStyle.Name}" FontWeight="Bold" />
+                    </TextBlock>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <Button Content="保存更改"
+                                Command="{Binding UpdateStyleCommand}"
+                                Classes="primary"
+                                IsEnabled="{Binding !IsBusy}" />
+                        <CheckBox Content="删除时清除文件"
+                                  IsChecked="{Binding PurgeOnDelete}"
+                                  VerticalAlignment="Center" />
+                        <Button Content="删除"
+                                Command="{Binding DeleteStyleCommand}"
+                                Classes="secondary"
+                                IsEnabled="{Binding !IsBusy}" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBox Text="{Binding SldContent}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinHeight="200"
+                         MaxHeight="300"
+                         FontFamily="Consolas, Monaco, monospace"
+                         FontSize="12" />
+            </StackPanel>
+        </Border>
+
+        <!-- 创建新样式 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="创建新样式" Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="样式名称"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <TextBox Text="{Binding NewStyleName}"
+                             Watermark="输入样式名称..." />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <TextBlock Grid.Column="0" Text="SLD 样式内容"
+                                   Classes="body"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Content="加载示例"
+                                Command="{Binding LoadSampleSldCommand}"
+                                Classes="secondary"
+                                Margin="0,0,8,0" />
+                        <Button Grid.Column="2"
+                                Content="从文件加载"
+                                Command="{Binding SelectSldFileCommand}"
+                                Classes="secondary" />
+                    </Grid>
+                    <TextBox Text="{Binding NewSldContent}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="150"
+                             MaxHeight="250"
+                             FontFamily="Consolas, Monaco, monospace"
+                             FontSize="12"
+                             Watermark="输入 SLD XML 内容..." />
+                </StackPanel>
+
+                <Button Content="创建样式"
+                        Command="{Binding CreateStyleCommand}"
+                        Classes="primary"
+                        IsEnabled="{Binding !IsBusy}" />
+            </StackPanel>
+        </Border>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在处理..."
+                           Classes="subtitle" />
+                <ProgressBar IsIndeterminate="True" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 状态显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="状态" Classes="subtitle" />
+                <TextBlock Text="{Binding StatusMessage}" Classes="body" />
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

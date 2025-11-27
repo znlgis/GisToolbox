@@ -1,0 +1,188 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.GeoServerTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+             x:Class="GisToolbox.Views.GeoServerTools.LayerManagementView"
+             x:DataType="vm:LayerManagementViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 连接状态提示 -->
+        <Border Background="#FFF4F4"
+                BorderBrush="#E81123"
+                BorderThickness="1"
+                Padding="16"
+                CornerRadius="4"
+                IsVisible="{Binding !IsConnected}">
+            <TextBlock Text="请先使用 'GeoServer 连接' 工具连接到 GeoServer 服务器"
+                       Foreground="#E81123"
+                       FontWeight="SemiBold" />
+        </Border>
+
+        <!-- 筛选选项 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="筛选选项" Classes="subtitle" />
+
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <CheckBox Content="显示所有图层"
+                              IsChecked="{Binding ShowAllLayers}" />
+                </StackPanel>
+
+                <StackPanel IsVisible="{Binding !ShowAllLayers}" Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="选择工作空间" Classes="body" VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Content="刷新"
+                                Command="{Binding RefreshWorkspacesCommand}"
+                                Classes="secondary"
+                                IsEnabled="{Binding !IsBusy}" />
+                    </Grid>
+                    <ComboBox ItemsSource="{Binding Workspaces}"
+                              SelectedItem="{Binding SelectedWorkspace}"
+                              HorizontalAlignment="Stretch"
+                              PlaceholderText="选择工作空间...">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <Button Content="加载图层"
+                        Command="{Binding RefreshLayersCommand}"
+                        Classes="primary"
+                        IsEnabled="{Binding !IsBusy}" />
+            </StackPanel>
+        </Border>
+
+        <!-- 图层列表 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="图层列表" Classes="subtitle" />
+
+                <ListBox ItemsSource="{Binding Layers}"
+                         SelectedItem="{Binding SelectedLayer}"
+                         MinHeight="120"
+                         MaxHeight="250">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*" Margin="8,4">
+                                <TextBlock Grid.Column="0" Text="🗺️" FontSize="16" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Type}" Classes="caption" Foreground="#8A8886" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+
+        <!-- 图层详情与操作 -->
+        <Border Classes="card" IsVisible="{Binding SelectedLayer, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="图层详情" Classes="subtitle" />
+
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="名称" Classes="caption" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedLayer.Name}" Classes="body" FontWeight="SemiBold" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="类型" Classes="caption" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LayerDetails.Type}" Classes="body" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="当前样式" Classes="caption" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LayerDetails.DefaultStyle.Name}" Classes="body" />
+                </Grid>
+
+                <Separator />
+
+                <!-- 设置默认样式 -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="设置默认样式" Classes="body" FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding AvailableStyles}"
+                                  SelectedItem="{Binding SelectedDefaultStyle}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="选择样式...">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Grid.Column="1"
+                                Content="应用"
+                                Command="{Binding SetDefaultStyleCommand}"
+                                Classes="primary"
+                                Margin="8,0,0,0"
+                                IsEnabled="{Binding !IsBusy}" />
+                    </Grid>
+                </StackPanel>
+
+                <Separator />
+
+                <!-- 删除图层 -->
+                <StackPanel Spacing="12">
+                    <CheckBox Content="递归删除（包含关联的要素类型）"
+                              IsChecked="{Binding DeleteRecursively}" />
+                    <Button Content="删除图层"
+                            Command="{Binding DeleteLayerCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在处理..."
+                           Classes="subtitle" />
+                <ProgressBar IsIndeterminate="True" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 状态显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="状态" Classes="subtitle" />
+                <TextBlock Text="{Binding StatusMessage}" Classes="body" />
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

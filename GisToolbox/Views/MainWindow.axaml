@@ -4,9 +4,11 @@
         xmlns:vvm="using:GisToolbox.ViewModels.VectorTools"
         xmlns:cvm="using:GisToolbox.ViewModels.CoordinateTools"
         xmlns:rvm="using:GisToolbox.ViewModels.RasterTools"
+        xmlns:gsvm="using:GisToolbox.ViewModels.GeoServerTools"
         xmlns:views="using:GisToolbox.Views.VectorTools"
         xmlns:cviews="using:GisToolbox.Views.CoordinateTools"
         xmlns:rviews="using:GisToolbox.Views.RasterTools"
+        xmlns:gsviews="using:GisToolbox.Views.GeoServerTools"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
@@ -127,7 +129,7 @@
                                        Margin="0,0,0,32" />
 
                             <!-- 功能卡片 -->
-                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*,*" ColumnSpacing="16"
                                   RowSpacing="16">
                                 <!-- 矢量工具卡片 -->
                                 <Border Grid.Row="0" Grid.Column="0" Classes="card">
@@ -176,6 +178,23 @@
                                                    Classes="subtitle" />
                                         <TextBlock Classes="body" TextWrapping="Wrap">
                                             坐标系统转换、CSV转几何等坐标处理功能
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- GeoServer 工具卡片 -->
+                                <Border Grid.Row="0" Grid.Column="3" Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <Border Background="#FCE4EC"
+                                                CornerRadius="8"
+                                                Padding="12"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="🌍" FontSize="24" />
+                                        </Border>
+                                        <TextBlock Text="GeoServer"
+                                                   Classes="subtitle" />
+                                        <TextBlock Classes="body" TextWrapping="Wrap">
+                                            管理 GeoServer 服务器：工作空间、数据存储、图层、样式等
                                         </TextBlock>
                                     </StackPanel>
                                 </Border>
@@ -229,6 +248,21 @@
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type rvm:RasterResampleViewModel}">
                                     <rviews:RasterResampleView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type gsvm:GeoServerConnectionViewModel}">
+                                    <gsviews:GeoServerConnectionView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type gsvm:WorkspaceManagementViewModel}">
+                                    <gsviews:WorkspaceManagementView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type gsvm:DataStoreManagementViewModel}">
+                                    <gsviews:DataStoreManagementView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type gsvm:LayerManagementViewModel}">
+                                    <gsviews:LayerManagementView />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type gsvm:StyleManagementViewModel}">
+                                    <gsviews:StyleManagementView />
                                 </DataTemplate>
                             </ContentControl.DataTemplates>
                         </ContentControl>
