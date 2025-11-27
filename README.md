@@ -27,6 +27,16 @@
 - **坐标系统转换**：在不同坐标参考系统（如 WGS84、Web Mercator 等）之间转换几何数据
 - **CSV 转几何**：将包含坐标信息的 CSV 文件转换为矢量几何数据
 
+### 🌍 GeoServer 管理
+
+基于 GeoServer REST API 实现的完整服务器管理功能：
+
+- **服务器连接**：连接到 GeoServer 服务器，支持测试连接、查看服务器版本信息
+- **工作空间管理**：创建、查看、删除工作空间，支持隔离工作空间
+- **数据存储管理**：管理数据存储，支持上传 Shapefile 创建数据存储
+- **图层管理**：查看、配置图层，设置默认样式，删除图层
+- **样式管理**：创建、编辑、删除 SLD 样式，支持从文件加载样式
+
 ## 🚀 快速开始
 
 ### 环境要求
@@ -92,16 +102,20 @@ GisToolbox/
 │   ├── RasterDataModel.cs          # 栅格数据模型
 │   ├── ProcessingResult.cs         # 处理结果模型
 │   ├── ToolMenuItem.cs             # 工具菜单项
-│   └── Messages.cs                 # 消息定义
+│   ├── Messages.cs                 # 消息定义
+│   └── GeoServer/                  # GeoServer 相关模型
+│       └── GeoServerModels.cs      # GeoServer API 模型
 ├── Services/                        # 服务层
 │   ├── Interfaces/                 # 服务接口
 │   │   ├── IVectorProcessingService.cs
 │   │   ├── IRasterProcessingService.cs
-│   │   └── ICoordinateTransformService.cs
+│   │   ├── ICoordinateTransformService.cs
+│   │   └── IGeoServerService.cs    # GeoServer REST API 接口
 │   └── Implementations/            # 服务实现
 │       ├── VectorProcessingService.cs
 │       ├── RasterProcessingService.cs
-│       └── CoordinateTransformService.cs
+│       ├── CoordinateTransformService.cs
+│       └── GeoServerService.cs     # GeoServer REST API 实现
 ├── ViewModels/                      # 视图模型
 │   ├── Base/                       # 基础 ViewModel
 │   │   ├── ViewModelBase.cs
@@ -109,11 +123,13 @@ GisToolbox/
 │   ├── VectorTools/                # 矢量工具 ViewModels
 │   ├── RasterTools/                # 栅格工具 ViewModels
 │   ├── CoordinateTools/            # 坐标工具 ViewModels
+│   ├── GeoServerTools/             # GeoServer 工具 ViewModels
 │   └── MainWindowViewModel.cs
 ├── Views/                           # 视图
 │   ├── VectorTools/
 │   ├── RasterTools/
 │   ├── CoordinateTools/
+│   ├── GeoServerTools/             # GeoServer 工具视图
 │   └── MainWindow.axaml
 ├── Controls/                        # 自定义控件
 │   └── MapPreviewControl.cs
@@ -154,6 +170,18 @@ GisToolbox/
 3. 指定 X、Y 列名（如 longitude, latitude）
 4. 设置坐标系统（SRID）
 5. 选择输出格式并执行转换
+
+### GeoServer 管理
+
+1. 选择"GeoServer" → "服务器连接"
+2. 输入 GeoServer URL（如 http://localhost:8080/geoserver）
+3. 输入用户名和密码（默认 admin/geoserver）
+4. 点击"测试连接"验证配置，然后点击"连接"
+5. 连接成功后，可以使用其他 GeoServer 管理工具：
+   - **工作空间管理**：创建、删除工作空间
+   - **数据存储管理**：上传 Shapefile、管理数据存储
+   - **图层管理**：查看图层、设置默认样式
+   - **样式管理**：创建、编辑 SLD 样式
 
 ## 🔧 开发
 

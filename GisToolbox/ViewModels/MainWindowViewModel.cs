@@ -1,6 +1,7 @@
 ﻿using GisToolbox.Models;
 using GisToolbox.ViewModels.Base;
 using GisToolbox.ViewModels.CoordinateTools;
+using GisToolbox.ViewModels.GeoServerTools;
 using GisToolbox.ViewModels.RasterTools;
 using GisToolbox.ViewModels.VectorTools;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,19 @@ public partial class MainWindowViewModel : ViewModelBase
                 [
                     new ToolMenuItem { Name = "坐标转换", ToolType = typeof(CoordinateTransformViewModel) },
                     new ToolMenuItem { Name = "CSV转几何", ToolType = typeof(CsvToGeometryViewModel) }
+                ]
+            },
+            new ToolCategoryItem
+            {
+                Name = "GeoServer",
+                Icon = "🌍",
+                Tools =
+                [
+                    new ToolMenuItem { Name = "服务器连接", ToolType = typeof(GeoServerConnectionViewModel) },
+                    new ToolMenuItem { Name = "工作空间管理", ToolType = typeof(WorkspaceManagementViewModel) },
+                    new ToolMenuItem { Name = "数据存储管理", ToolType = typeof(DataStoreManagementViewModel) },
+                    new ToolMenuItem { Name = "图层管理", ToolType = typeof(LayerManagementViewModel) },
+                    new ToolMenuItem { Name = "样式管理", ToolType = typeof(StyleManagementViewModel) }
                 ]
             }
         ];

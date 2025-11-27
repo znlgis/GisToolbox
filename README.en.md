@@ -2,7 +2,7 @@
 
 English | [简体中文](README.md)
 
-A cross-platform GIS toolbox application developed with .NET 8 and Avalonia UI, providing vector data processing, raster data processing, and coordinate transformation capabilities.
+A cross-platform GIS toolbox application developed with .NET 8 and Avalonia UI, providing vector data processing, raster data processing, coordinate transformation, and GeoServer management capabilities.
 
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -26,6 +26,16 @@ A cross-platform GIS toolbox application developed with .NET 8 and Avalonia UI, 
 
 - **Coordinate System Transformation**: Transform geometry data between different coordinate reference systems (e.g., WGS84, Web Mercator)
 - **CSV to Geometry**: Convert CSV files containing coordinate information to vector geometry data
+
+### 🌍 GeoServer Management
+
+Full-featured GeoServer management based on REST API:
+
+- **Server Connection**: Connect to GeoServer, test connection, view server version
+- **Workspace Management**: Create, view, and delete workspaces, support isolated workspaces
+- **Data Store Management**: Manage data stores, upload Shapefiles to create data stores
+- **Layer Management**: View and configure layers, set default styles, delete layers
+- **Style Management**: Create, edit, and delete SLD styles, load styles from files
 
 ## 🚀 Quick Start
 

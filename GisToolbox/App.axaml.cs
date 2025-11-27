@@ -6,6 +6,7 @@ using GisToolbox.Services.Implementations;
 using GisToolbox.Services.Interfaces;
 using GisToolbox.ViewModels;
 using GisToolbox.ViewModels.CoordinateTools;
+using GisToolbox.ViewModels.GeoServerTools;
 using GisToolbox.ViewModels.RasterTools;
 using GisToolbox.ViewModels.VectorTools;
 using GisToolbox.Views;
@@ -48,6 +49,7 @@ public class App : Application
         // 注册服务
         services.AddSingleton<IVectorProcessingService, VectorProcessingService>();
         services.AddSingleton<ICoordinateTransformService, CoordinateTransformService>();
+        services.AddSingleton<IGeoServerService, GeoServerService>();
 
         if (OperatingSystem.IsWindows()) services.AddSingleton<IRasterProcessingService, RasterProcessingService>();
 
@@ -59,6 +61,13 @@ public class App : Application
         services.AddTransient<OverlayAnalysisViewModel>();
         services.AddTransient<CoordinateTransformViewModel>();
         services.AddTransient<CsvToGeometryViewModel>();
+
+        // GeoServer 工具 ViewModels
+        services.AddTransient<GeoServerConnectionViewModel>();
+        services.AddTransient<WorkspaceManagementViewModel>();
+        services.AddTransient<DataStoreManagementViewModel>();
+        services.AddTransient<LayerManagementViewModel>();
+        services.AddTransient<StyleManagementViewModel>();
 
         if (OperatingSystem.IsWindows())
         {

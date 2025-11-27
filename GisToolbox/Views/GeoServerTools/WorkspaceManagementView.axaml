@@ -1,0 +1,139 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.GeoServerTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="GisToolbox.Views.GeoServerTools.WorkspaceManagementView"
+             x:DataType="vm:WorkspaceManagementViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 连接状态提示 -->
+        <Border Background="#FFF4F4"
+                BorderBrush="#E81123"
+                BorderThickness="1"
+                Padding="16"
+                CornerRadius="4"
+                IsVisible="{Binding !IsConnected}">
+            <TextBlock Text="请先使用 'GeoServer 连接' 工具连接到 GeoServer 服务器"
+                       Foreground="#E81123"
+                       FontWeight="SemiBold" />
+        </Border>
+
+        <!-- 工作空间列表卡片 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="工作空间列表" Classes="subtitle" />
+                    <Button Grid.Column="1"
+                            Content="刷新"
+                            Command="{Binding RefreshWorkspacesCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </Grid>
+
+                <ListBox ItemsSource="{Binding Workspaces}"
+                         SelectedItem="{Binding SelectedWorkspace}"
+                         MinHeight="150"
+                         MaxHeight="300">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="12" Margin="8,4">
+                                <TextBlock Text="📁" FontSize="16" />
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- 选中工作空间的操作 -->
+                <StackPanel IsVisible="{Binding SelectedWorkspace, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Spacing="12">
+                    <Separator />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="选中的工作空间:" Classes="body" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SelectedWorkspace.Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <CheckBox Content="递归删除（包含所有数据存储和图层）"
+                                  IsChecked="{Binding DeleteRecursively}" />
+                    </StackPanel>
+                    <Button Content="删除工作空间"
+                            Command="{Binding DeleteWorkspaceCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 创建工作空间卡片 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="创建新工作空间" Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="工作空间名称"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <TextBox Text="{Binding NewWorkspaceName}"
+                             Watermark="输入工作空间名称..." />
+                </StackPanel>
+
+                <CheckBox Content="隔离工作空间（Isolated）"
+                          IsChecked="{Binding NewWorkspaceIsolated}" />
+
+                <Button Content="创建工作空间"
+                        Command="{Binding CreateWorkspaceCommand}"
+                        Classes="primary"
+                        IsEnabled="{Binding !IsBusy}" />
+            </StackPanel>
+        </Border>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在处理..."
+                           Classes="subtitle" />
+                <ProgressBar IsIndeterminate="True" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 状态显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="状态" Classes="subtitle" />
+                <TextBlock Text="{Binding StatusMessage}" Classes="body" />
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

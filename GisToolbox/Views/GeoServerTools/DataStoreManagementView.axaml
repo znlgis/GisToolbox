@@ -1,0 +1,186 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GisToolbox.ViewModels.GeoServerTools"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+             x:Class="GisToolbox.Views.GeoServerTools.DataStoreManagementView"
+             x:DataType="vm:DataStoreManagementViewModel">
+
+    <StackPanel Spacing="24">
+        <!-- 工具标题 -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding ToolName}"
+                       Classes="title" />
+            <TextBlock Text="{Binding ToolDescription}"
+                       Classes="body"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 连接状态提示 -->
+        <Border Background="#FFF4F4"
+                BorderBrush="#E81123"
+                BorderThickness="1"
+                Padding="16"
+                CornerRadius="4"
+                IsVisible="{Binding !IsConnected}">
+            <TextBlock Text="请先使用 'GeoServer 连接' 工具连接到 GeoServer 服务器"
+                       Foreground="#E81123"
+                       FontWeight="SemiBold" />
+        </Border>
+
+        <!-- 工作空间选择 -->
+        <Border Classes="card" IsVisible="{Binding IsConnected}">
+            <StackPanel Spacing="20">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="选择工作空间" Classes="subtitle" />
+                    <Button Grid.Column="1"
+                            Content="刷新"
+                            Command="{Binding RefreshWorkspacesCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </Grid>
+
+                <ComboBox ItemsSource="{Binding Workspaces}"
+                          SelectedItem="{Binding SelectedWorkspace}"
+                          HorizontalAlignment="Stretch"
+                          PlaceholderText="选择工作空间...">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+        <!-- 数据存储列表 -->
+        <Border Classes="card" IsVisible="{Binding SelectedWorkspace, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="20">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="数据存储列表" Classes="subtitle" />
+                    <Button Grid.Column="1"
+                            Content="刷新"
+                            Command="{Binding RefreshDataStoresCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </Grid>
+
+                <ListBox ItemsSource="{Binding DataStores}"
+                         SelectedItem="{Binding SelectedDataStore}"
+                         MinHeight="120"
+                         MaxHeight="250">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,4">
+                                <TextBlock Grid.Column="0" Text="📦" FontSize="16" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Type}" Classes="caption" Foreground="#8A8886" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- 选中数据存储的操作 -->
+                <StackPanel IsVisible="{Binding SelectedDataStore, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Spacing="12">
+                    <Separator />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="选中的数据存储:" Classes="body" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SelectedDataStore.Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <CheckBox Content="递归删除（包含所有要素类型和图层）"
+                              IsChecked="{Binding DeleteRecursively}" />
+                    <Button Content="删除数据存储"
+                            Command="{Binding DeleteDataStoreCommand}"
+                            Classes="secondary"
+                            IsEnabled="{Binding !IsBusy}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 上传 Shapefile -->
+        <Border Classes="card" IsVisible="{Binding SelectedWorkspace, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="20">
+                <TextBlock Text="上传 Shapefile" Classes="subtitle" />
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="数据存储名称"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <TextBox Text="{Binding NewDataStoreName}"
+                             Watermark="输入数据存储名称..." />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Shapefile 文件"
+                               Classes="body"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding ShapefilePath}"
+                                 Watermark="选择 Shapefile 或 ZIP 文件..."
+                                 IsReadOnly="True" />
+                        <Button Grid.Column="1"
+                                Content="浏览"
+                                Command="{Binding SelectShapefileCommand}"
+                                Classes="secondary"
+                                Margin="8,0,0,0"
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+
+                <Button Content="上传并创建数据存储"
+                        Command="{Binding UploadShapefileCommand}"
+                        Classes="primary"
+                        IsEnabled="{Binding !IsBusy}" />
+
+                <Border Background="#F3F2F1" Padding="12" CornerRadius="4">
+                    <TextBlock Classes="caption" TextWrapping="Wrap">
+                        支持上传 .shp 文件或包含 Shapefile 的 .zip 压缩包
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- 进度显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="正在处理..."
+                           Classes="subtitle" />
+                <ProgressBar IsIndeterminate="True" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Classes="body" />
+            </StackPanel>
+        </Border>
+
+        <!-- 状态显示 -->
+        <Border Classes="card"
+                IsVisible="{Binding !IsBusy}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="状态" Classes="subtitle" />
+                <TextBlock Text="{Binding StatusMessage}" Classes="body" />
+
+                <!-- 错误显示 -->
+                <Border Background="#FFF4F4"
+                        BorderBrush="#E81123"
+                        BorderThickness="1"
+                        Padding="16"
+                        CornerRadius="4"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="错误"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E81123" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Classes="body"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
