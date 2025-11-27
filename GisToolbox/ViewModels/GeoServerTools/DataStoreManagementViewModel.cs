@@ -33,14 +33,6 @@ public partial class DataStoreManagementViewModel : ToolViewModelBase
 
     public bool IsConnected => _geoServerService.IsConnected;
 
-    public List<string> DataStoreTypes { get; } = new()
-    {
-        "Shapefile",
-        "PostGIS",
-        "GeoPackage",
-        "Directory of Shapefiles"
-    };
-
     partial void OnSelectedWorkspaceChanged(GeoServerWorkspace? value)
     {
         if (value != null)

@@ -66,9 +66,10 @@ public class GeoServerService : IGeoServerService
                         }
                     }
                 }
-                catch
+                catch (JsonException)
                 {
-                    // 忽略解析错误，只要能连接就算成功
+                    // 忽略 JSON 解析错误，只要能连接就算成功
+                    // 某些 GeoServer 版本可能返回不同格式的响应
                 }
 
                 return (true, "连接成功", info);
@@ -306,6 +307,11 @@ public class GeoServerService : IGeoServerService
         if (!File.Exists(shapefilePath))
             return (false, $"文件不存在: {shapefilePath}");
 
+        // 验证文件扩展名
+        var extension = Path.GetExtension(shapefilePath).ToLower();
+        if (extension != ".zip" && extension != ".shp")
+            return (false, "仅支持 .zip 或 .shp 文件格式");
+
         var client = GetClient();
 
         // 上传 ZIP 文件包含 Shapefile
@@ -313,7 +319,6 @@ public class GeoServerService : IGeoServerService
         var httpContent = new ByteArrayContent(fileBytes);
 
         // 根据文件扩展名设置 Content-Type
-        var extension = Path.GetExtension(shapefilePath).ToLower();
         var contentType = extension switch
         {
             ".zip" => "application/zip",
